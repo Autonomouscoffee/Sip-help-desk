@@ -1,0 +1,54 @@
+$width: 100%;
+$gutter: 0%;
+
+.row {
+	position: relative;
+	width: 100%;
+}
+
+.row [class^="col"] {
+	float: left;
+}
+
+.row::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.col-1 {
+	width: calc($width / 12) - calc($gutter * 11 / 12);
+}
+.col-2 {
+	width: calc($width / 6) - calc($gutter * 10 / 12);
+}
+.col-3 {
+	width: calc($width / 4) - calc($gutter * 9 / 12);
+}
+.col-4 {
+	width: calc($width / 3) - calc($gutter * 8 / 12);
+}
+.col-5 {
+	width: calc($width / calc(12 / 5)) - calc($gutter * 7 / 12);
+}
+.col-6 {
+	width: calc($width / 2) - calc($gutter * 6 / 12);
+}
+.col-7 {
+	width: calc($width / calc(12 / 7)) - calc($gutter * 5 / 12);
+}
+.col-8 {
+	width: calc($width / calc(12 / 8)) - calc($gutter * 4 / 12);
+}
+.col-9 {
+	width: calc($width / calc(12 / 9)) - calc($gutter * 3 / 12);
+}
+.col-10 {
+	width: calc($width / calc(12 / 10)) - calc($gutter * 2 / 12);
+}
+.col-11 {
+	width: calc($width / calc(12 / 11)) - calc($gutter * 1 / 12);
+}
+.col-12 {
+	width: $width;
+}

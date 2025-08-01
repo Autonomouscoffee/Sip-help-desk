@@ -1,0 +1,18 @@
+{
+  "cwd": "C:\\Users\\jorge\\Desktop\\SIP\\SipHelpDesk",
+  "type": [
+    "web"
+  ],
+  "name": "SipHelpDesk",
+  "framework": "vue",
+  "template": "tabs",
+  "bundler": "vite",
+  "cssPreProcessor": "scss",
+  "theming": {
+    "customColor": true,
+    "color": "#191919",
+    "darkMode": false,
+    "iconFonts": true
+  },
+  "customBuild": false
+}
