@@ -44,8 +44,30 @@
               <tbody>
                 <tr v-for="usuario in usuarios" :key="usuario.id">
                   <td class="label-cell">{{ usuario.nombre }}</td>
-                  <td class="label-cell">{{ usuario.email }}</td>
-                  <td class="label-cell">{{ usuario.dni }}</td>
+                  <td class="label-cell">
+                    <f7-list>
+                      <f7-list-input
+                        v-model:value="usuario.email"
+                        type="email"
+                        label=""
+                        placeholder=""
+                        clear-button
+                      >
+                      </f7-list-input>
+                    </f7-list>
+                  </td>
+                  <td class="label-cell">
+                    <f7-list>
+                      <f7-list-input
+                        v-model:value="usuario.dni"
+                        type="text"
+                        label=""
+                        placeholder=""
+                        clear-button
+                      >
+                      </f7-list-input>
+                    </f7-list>
+                  </td>
                   <td class="label-cell">
                     <f7-list>
                       <f7-list-input
@@ -122,7 +144,10 @@ const findUser = async (emailOrDni) => {
         },
       }
     )
-    usuarios.value = data.usuarios
+    usuarios.value = data.usuarios.map((item) => ({
+      ...item,
+      emailPasado: item.email,
+    }))
   } catch (e) {
     console.log('ego ', e)
   }
@@ -150,10 +175,13 @@ const update = (usuario) => {
     async () => {
       f7.preloader.show()
       try {
+        usuario.email = usuario.email.trim()
         await axios.post(
           `https://webhooks.sipcafes.net/helpdesk/users/update`,
           {
-            usuario: { ...usuario },
+            usuario: {
+              ...usuario,
+            },
           },
           {
             headers: {
@@ -161,7 +189,7 @@ const update = (usuario) => {
             },
           }
         )
-        await findUser(emailOrDNI.value.trim())
+        await findUser(usuario.email)
 
         f7.dialog.alert('Datos actualizados correctamente', '')
       } catch (e) {
@@ -194,7 +222,7 @@ const password = (usuario) => {
             },
           }
         )
-        await findUser(emailOrDNI.value.trim())
+        await findUser(usuario.email)
 
         f7.dialog.alert(
           `El password temporal del usuario ${usuario.email} es 123, indicale que use este password y luego desde su perfil lo actualice`,
