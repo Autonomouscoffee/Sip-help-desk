@@ -15,9 +15,22 @@
         ></f7-link>
       </f7-toolbar>
 
-      <f7-view id="view-home" main tab tab-active url="/"></f7-view>
+      <f7-view
+        id="view-home"
+        main
+        tab
+        tab-active
+        url="/"
+        :load-initial-page="false"
+      ></f7-view>
 
-      <f7-view id="view-billing" name="billing" tab url="/billing/"></f7-view>
+      <f7-view
+        id="view-billing"
+        :load-initial-page="false"
+        name="billing"
+        tab
+        url="/billing/"
+      ></f7-view>
       <!--
       <f7-view
         id="view-settings"
@@ -30,7 +43,17 @@
     <f7-login-screen id="my-login-screen">
       <f7-view>
         <f7-page login-screen>
-          <f7-login-screen-title>Login</f7-login-screen-title>
+          <f7-login-screen-title>
+            <img
+              src="/icons/512x512.png"
+              alt="sip"
+              width="100"
+              height="100"
+              style="margin: 0 auto; text-align: center"
+            />
+            <br />
+            Bienvenido
+          </f7-login-screen-title>
           <f7-list>
             <f7-list-input
               v-model:value="token"
@@ -42,10 +65,9 @@
             ></f7-list-input>
           </f7-list>
           <f7-list>
-            <f7-list-button
-              title="Inicia sesion"
-              @click.prevent="login"
-            ></f7-list-button>
+            <f7-button round filled @click.prevent="login">
+              Inicia sesion
+            </f7-button>
           </f7-list>
         </f7-page>
       </f7-view>
@@ -53,8 +75,9 @@
   </f7-app>
 </template>
 <script>
-import { ref, onMounted, computed } from 'vue'
-import { f7, f7ready } from 'framework7-vue'
+import axios from 'axios'
+import { ref, onMounted, watch } from 'vue'
+import { f7, f7ready, useStore } from 'framework7-vue'
 import routes from '@/js/routes.js'
 import store from '@/js/store'
 
@@ -84,16 +107,49 @@ export default {
     }
 
     const token = ref('')
-    const isLoggedIn = computed(() => f7.store.getters.isLoggedIn)
 
-    const login = () => {
-      f7.store.dispatch('login', { isLoggedIn: true })
+    const isLoggedIn = useStore(store, 'isLoggedIn')
+
+    watch(isLoggedIn, (value, old) => {
+      if (!old && value) {
+        f7.loginScreen.close()
+      }
+      if (!value && old) {
+        f7.loginScreen.open('#my-login-screen')
+      }
+    })
+
+    const login = async () => {
+      if (!token.value) {
+        f7.dialog.alert('Ingrese un token válido')
+        return
+      }
+      try {
+        const { data } = await axios.post(
+          'https://webhooks.sipcafes.net/otp/verify',
+          {
+            token: token.value,
+          },
+          {
+            headers: {
+              'api-key': '0baacc2cdfc72fbe6462cc405cf50a8f2fb78',
+            },
+          }
+        )
+        if (data.token) {
+          f7.store.dispatch('login', { isLoggedIn: true, token: data.token })
+        } else {
+          f7.dialog.alert('Token incorrecto')
+        }
+      } catch (e) {
+        console.log(e)
+        f7.dialog.alert('Token incorrecto')
+      }
     }
 
     onMounted(() => {
       f7ready((f7) => {
         window.$f7 = f7
-        console.log(isLoggedIn.value)
         if (!isLoggedIn.value) {
           f7.loginScreen.open('#my-login-screen')
         }

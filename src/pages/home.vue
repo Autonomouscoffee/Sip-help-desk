@@ -1,5 +1,5 @@
 <template>
-  <f7-page name="home">
+  <f7-page name="home" @page:afterin="load">
     <f7-navbar :large="false" :sliding="false">
       <f7-nav-left> </f7-nav-left>
       <f7-nav-title sliding>SipHelpDesk</f7-nav-title>
@@ -124,12 +124,14 @@
 </template>
 <script setup>
 import axios from 'axios'
-import { f7 } from 'framework7-vue'
-import { ref, onMounted } from 'vue'
+import { f7, useStore } from 'framework7-vue'
+import { ref } from 'vue'
 const usuarios = ref([])
 const clients = ref([])
 const emailOrDNI = ref('')
 const keyUsuarios = ref(f7.utils.id())
+
+const token = useStore('token')
 
 const findUser = async (emailOrDni) => {
   try {
@@ -140,7 +142,7 @@ const findUser = async (emailOrDni) => {
       },
       {
         headers: {
-          'api-key': '0baacc2cdfc72fbe6462cc405cf50a8f2fb78',
+          Authorization: `Bearer ${token.value}`,
         },
       }
     )
@@ -150,18 +152,23 @@ const findUser = async (emailOrDni) => {
     }))
   } catch (e) {
     console.log('ego ', e)
+    if (e?.status == 401) {
+      f7.store.dispatch('logOut')
+    }
   }
 }
 
 const search = async () => {
-  //  `https://webhooks.sipcafes.net/otp/verify`,
-
   if (!emailOrDNI.value.trim() || emailOrDNI.value.trim().length <= 5) {
     f7.dialog.alert('Ingrese un DNI o Email a buscar', 'Error')
     return
   }
 
   f7.preloader.show()
+
+  if (clients.value.length == 0) {
+    await loadClients()
+  }
 
   await findUser(emailOrDNI.value.trim())
 
@@ -185,7 +192,7 @@ const update = (usuario) => {
           },
           {
             headers: {
-              'api-key': '0baacc2cdfc72fbe6462cc405cf50a8f2fb78',
+              Authorization: `Bearer ${token.value}`,
             },
           }
         )
@@ -206,7 +213,7 @@ const update = (usuario) => {
 
 const password = (usuario) => {
   f7.dialog.confirm(
-    `¿Confirmas la generación del password 123 para el usuario ${usuario.email}?`,
+    `¿Confirmas la generación del password 123 para el usuario ${usuario.emailPasado}?`,
     'Confirmación',
     async () => {
       f7.preloader.show()
@@ -214,18 +221,18 @@ const password = (usuario) => {
         await axios.post(
           `https://webhooks.sipcafes.net/helpdesk/users/update/password`,
           {
-            usuario: { ...usuario },
+            usuario: { ...usuario, email: usuario.emailPasado },
           },
           {
             headers: {
-              'api-key': '0baacc2cdfc72fbe6462cc405cf50a8f2fb78',
+              Authorization: `Bearer ${token.value}`,
             },
           }
         )
-        await findUser(usuario.email)
+        await findUser(usuario.emailPasado)
 
         f7.dialog.alert(
-          `El password temporal del usuario ${usuario.email} es 123, indicale que use este password y luego desde su perfil lo actualice`,
+          `El password temporal del usuario ${usuario.emailPasado} es 123, indicale que use este password y luego desde su perfil lo actualice`,
           ''
         )
       } catch (e) {
@@ -237,14 +244,14 @@ const password = (usuario) => {
   )
 }
 
-onMounted(async () => {
+const loadClients = async () => {
   try {
     const { data } = await axios.post(
       `https://webhooks.sipcafes.net/helpdesk/clients`,
       {},
       {
         headers: {
-          'api-key': '0baacc2cdfc72fbe6462cc405cf50a8f2fb78',
+          Authorization: `Bearer ${token.value}`,
         },
       }
     )
@@ -252,5 +259,9 @@ onMounted(async () => {
   } catch (e) {
     console.log('ego ', e)
   }
-})
+}
+
+const load = async () => {
+  await loadClients()
+}
 </script>

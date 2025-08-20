@@ -81,6 +81,10 @@
 	--f7-input-text-color: #fff;
 	--f7-label-text-color: #fff;
 	--f7-input-clear-button-color: #fff;
+
+	--f7-login-screen-content-bg-color: #242424;
+	--f7-login-screen-title-text-color: #fff;
+	--f7-list-button-text-color: #fff;
 }
 
 .tab-link-active {
@@ -97,6 +101,9 @@ html,
 body {
 	font-family: "Montserrat", sans-serif;
 	background: #000;
+}
+.login-screen-content {
+	background: #242424;
 }
 
 .md {
