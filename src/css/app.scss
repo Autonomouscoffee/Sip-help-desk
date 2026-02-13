@@ -333,6 +333,12 @@ li.media-item.checked {
 	flex-wrap: wrap;
 }
 
+select {
+	option {
+		color: #000;
+	}
+}
+
 @for $peso from 100 through 900 {
 	.font-weight-#{$peso} {
 		font-weight: #{$peso};
