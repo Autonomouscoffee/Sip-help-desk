@@ -85,6 +85,40 @@
 	--f7-login-screen-content-bg-color: #242424;
 	--f7-login-screen-title-text-color: #fff;
 	--f7-list-button-text-color: #fff;
+
+	--f7-table-body-font-size: 11px;
+	--f7-table-label-cell-padding-horizontal: 4px;
+}
+
+.custom-date-control {
+	.item-input-wrap {
+		display: none;
+		visibility: hidden;
+		> * {
+			display: none;
+		}
+	}
+	.dp__main {
+		position: absolute;
+		top: 19px;
+		width: 100%;
+		left: 0;
+	}
+}
+.card.data-table.data-table-collapsible.data-table-init {
+	--f7-card-margin-horizontal: 0;
+	.label-cell {
+		--f7-list-font-size: 11px;
+		--f7-input-font-size: 11px;
+		.item-input.item-content {
+			margin-left: 4px;
+			margin-right: 4px;
+			padding-top: 4px;
+			padding-bottom: 4px;
+			padding-left: 4px;
+			padding-right: 4px;
+		}
+	}
 }
 
 .tab-link-active {

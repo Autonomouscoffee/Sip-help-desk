@@ -8,7 +8,7 @@
 
     <f7-block>
       <div class="row">
-        <div class="col-3">
+        <div class="col-4">
           <f7-list>
             <f7-list-input
               v-model:value="filters.machine_id"
@@ -27,7 +27,7 @@
             </f7-list-input>
           </f7-list>
         </div>
-        <div class="col-3">
+        <div class="col-4">
           <f7-list>
             <f7-list-input
               v-model:value="filters.user_dni"
@@ -38,28 +38,27 @@
             ></f7-list-input>
           </f7-list>
         </div>
-        <div class="col-3">
-          <f7-list>
-            <f7-list-input
-              type="datepicker"
-              outline
-              label="Fecha de compra inicial"
-              placeholder="Fecha de compra inicial"
-              readonly
-              :calendar-params="calendarParamsStart"
-            />
-          </f7-list>
-        </div>
-        <div class="col-3">
-          <f7-list>
-            <f7-list-input
-              type="datepicker"
-              outline
-              label="Fecha de compra final"
-              placeholder="Fecha de compra final"
-              readonly
-              :calendar-params="calendarParamsEnd"
-            />
+        <div class="col-4">
+          <f7-list class="custom-date-control">
+            <f7-list-input outline label="Fecha inicio - Fecha fin">
+              <template #content>
+                <VueDatePicker
+                  v-model="date"
+                  centered
+                  :teleport="true"
+                  :locale="es"
+                  range
+                  multi-calendars
+                  :start-date="filters.creation_date_start"
+                  focus-start-date
+                  :action-row="{
+                    selectBtnLabel: 'Seleccionar',
+                    cancelBtnLabel: 'Cancelar',
+                    nowBtnLabel: 'Ahora',
+                  }"
+                />
+              </template>
+            </f7-list-input>
           </f7-list>
         </div>
       </div>
@@ -212,7 +211,8 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import axios from 'axios'
 import { f7, useStore } from 'framework7-vue'
-import { ref, reactive } from 'vue'
+import { ref, watch } from 'vue'
+import { es } from 'date-fns/locale'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -221,6 +221,7 @@ const formatDate = (time) => {
   return dayjs(time).tz('America/Buenos_Aires').format('YYYY-MM-DD HH:mm')
 }
 
+const date = ref()
 const popupOpened = ref(false)
 const vendingLogs = ref([])
 const vendingId = ref(null)
@@ -235,46 +236,16 @@ const filters = ref({
   creation_date_end: dayjs().format('YYYY-MM-DD 23:59'),
 })
 
-const calendarParamsStart = reactive({
-  closeOnSelect: true,
-  locale: 'es',
-  timePicker: true,
-  timePickerPlaceholder: 'Seleccione hora',
-  dateFormat: {
-    month: 'numeric',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-  },
-  on: {
-    close: (picker) => {
-      filters.value.creation_date_start = dayjs(picker.value[0]).format(
-        'YYYY-MM-DD HH:mm'
-      )
-    },
-  },
-})
-
-const calendarParamsEnd = reactive({
-  closeOnSelect: true,
-  locale: 'es',
-  timePicker: true,
-  timePickerPlaceholder: 'Seleccione hora',
-  dateFormat: {
-    month: 'numeric',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-  },
-  on: {
-    close: (picker) => {
-      filters.value.creation_date_end = dayjs(picker.value[0]).format(
-        'YYYY-MM-DD HH:mm'
-      )
-    },
-  },
+watch(date, (newDate) => {
+  console.log('fecha ', newDate)
+  if (newDate) {
+    filters.value.creation_date_start = dayjs(newDate[0]).format(
+      'YYYY-MM-DD HH:mm'
+    )
+    filters.value.creation_date_end = dayjs(newDate[1]).format(
+      'YYYY-MM-DD HH:mm'
+    )
+  }
 })
 
 const openLogs = (logs, id) => {

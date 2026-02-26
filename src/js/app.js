@@ -8,6 +8,9 @@ import '../css/icons.css';
 import '../css/grid.scss';
 import '../css/app.scss';
 import App from '../components/app.vue';
+import { VueDatePicker } from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+
 Framework7.use(Framework7Vue);
 
 const pinia = createPinia()
@@ -19,4 +22,5 @@ pinia.use(createPersistedState({
 const app = createApp(App);
 registerComponents(app);
 app.use(pinia)
+app.component('VueDatePicker', VueDatePicker);
 app.mount('#app');

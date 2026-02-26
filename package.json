@@ -18,7 +18,9 @@
     "last 5 Firefox versions"
   ],
   "dependencies": {
+    "@vuepic/vue-datepicker": "^12.1.0",
     "axios": "^1.13.5",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.11",
     "dom7": "^4.0.6",
     "framework7": "^8.3.4",
